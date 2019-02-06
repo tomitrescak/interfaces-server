@@ -1,0 +1,21 @@
+type Enum {
+  key: ID
+  value: String
+  title: String!
+  description: String
+}
+
+type Query {
+  units: [Enum!]!
+  consignments(searchString: String!): [Enum!]!
+  edition(searchString: String!): [Enum!]!
+  book(searchString: String!): [Enum!]!
+  person(searchString: String!): [Enum!]!
+  place(searchString: String!): [Enum!]!
+  confiscationReason: [Enum!]!
+  confiscationDecision: [Enum!]!
+}
+
+type Mutation {
+  empty: Int
+}
