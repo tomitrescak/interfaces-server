@@ -29,7 +29,7 @@ const options = {
   host: 'localhost',
   port: process.env.MYSQL_PORT ? parseInt(process.env.MYSQL_PORT, 10) : 3306,
   password: 'prisma',
-  database: 'consignments'
+  database: 'confiscations'
 };
 
 export const db = new Database(options);
