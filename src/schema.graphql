@@ -1,21 +1,55 @@
-type Enum {
+#import * from "./types.graphql"
+
+scalar JSON
+
+type DropdownOption {
   key: ID
   value: String
-  title: String!
+  text: String
   description: String
 }
 
+type SearchOption {
+  key: ID
+  value: String
+  title: String
+  titles: [String!]
+  description: String
+}
+
+enum ListType {
+  Unit
+  ConfiscationReason
+  ConfiscationDecision
+}
+
 type Query {
-  units: [Enum!]!
-  consignments(searchString: String!): [Enum!]!
-  edition(searchString: String!): [Enum!]!
-  book(searchString: String!): [Enum!]!
-  person(searchString: String!): [Enum!]!
-  place(searchString: String!): [Enum!]!
-  confiscationReason: [Enum!]!
-  confiscationDecision: [Enum!]!
+  searchConsignments(searchString: String!): [SearchOption!]!
+  searchEdition(searchString: String!): [SearchOption!]!
+  searchBook(searchString: String!): [SearchOption!]!
+  searchPerson(searchString: String!): [SearchOption!]!
+  searchPlace(searchString: String!): [SearchOption!]!
+  list(name: ListType): [DropdownOption!]!
+
+  confiscations(searchString: String!, limit: Int): [confiscation]
+  confiscation(id: Int!): confiscation
+  editions(searchString: String!, limit: Int): [edition]
+  edition(id: String!): edition
+  books(searchString: String!, limit: Int): [super_book]
+  book(id: String!): super_book
+  persons(searchString: String!, limit: Int): [person]
+  person(id: String!): person
+  locations(searchString: String!, limit: Int): [location]
+  location(id: Int!): location
+  consignments(searchString: String!, limit: Int): [consignment]
+  consignment(id: Int!): consignment
 }
 
 type Mutation {
-  empty: Int
+  saveConfiscation(data: JSON): confiscation
+  saveEdition(data: JSON): edition
+  saveBook(data: JSON): super_book
+  savePerson(data: JSON): person
+  saveConsignment(data: JSON): consignment
+  saveLocation(data: JSON): person
 }

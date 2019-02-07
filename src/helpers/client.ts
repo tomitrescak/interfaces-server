@@ -14,6 +14,15 @@ export class Database {
       });
     });
   }
+
+  async findOne<T>(sql: string, args?: any): Promise<T> {
+    let result = await this.query<T>(sql, args);
+    if (result && result.length) {
+      return result[0];
+    }
+    return null;
+  }
+
   close() {
     return new Promise((resolve, reject) => {
       this.connection.end(err => {

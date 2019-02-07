@@ -1,0 +1,118 @@
+# ========================================================= #
+#  CONSIGNMENT
+# ========================================================= #
+
+type consignment {
+  ID: Int
+  UUID: String # universal unique identifier
+  confiscation_register_ms: Int # MS number either 21933 or 21934
+  confiscation_register_folio: String # folio reference in confiscation register
+  customs_register_ms: Int # MS number in the range 21914-26
+  customs_register_folio: String # folio reference in customs register
+  ms_21935_folio: String # folio reference in MS21935 the supplementary confiscations register
+  shipping_number: String # shipping number as given in the register
+  marque: String # marque on consignment as given in the register
+  inspection_date: String # date recorded in the confiscation register
+  addressee_name: String # addressee's name as it appears in the register
+  addressee_title: String # addressee's title as it appears in the register
+  addressee: String # !FK: person_code for addressee
+  origin_text: String # the origin of the consignment as recorded in the resgister
+  origin_code: String # !FK: place_code of consingment origin
+  residual_collector_name: String # the name of the person who collected the residual books as given in the register
+  residual_collector: String # !FK: person_code of the person who collected the residual books
+  #collector_signed: Boolean # did the collector sign the register themself? 1 = yes 0 = no
+  acquit_a_caution: String # did the consignment have an acquit a caution?
+  confiscation_register_notes: String # notes arising from examination of the confiscation registers
+  customs_register_notes: String # notes arising from examination of the customs registers
+}
+
+type confiscation {
+  ID: Int # !PK: numeric ID (i.e. entry order)
+  UUID: String # universal unique identifier
+  consignment: Int! # !FK: ID of the consignment the book was in
+  title: String # the book title as it appears in the register
+  book_number: String # !FK: book_number of the book
+  number: Int # number of units confiscated
+  unit: Int # !FK: ID of the relevant units
+  confiscation_reason: Int # !FK: ID of the relevant confiscation_reason
+  confiscation_decision: Int # !FK: ID of the relevant confiscation_decision
+  date: String # the date the confiscation occurred (i.e. date that the decision was recorded)
+  censor_name: String # the name of the censor as it appears in the register
+  censor: String # !FK: person_code of the censor
+  sent_to_person_name: String # if the books were 'rendered' to someone their name as it appears in the register
+  sent_to_person: String # if the books were 'rendered' to someone their person code
+  sent_to_place_name: String # if the books were 'rendered' to a place the name of that place in the register
+  sent_to_place: String # if the books were 'rendered' to a place the place code
+}
+
+type confiscation_reason {
+  ID: Int # !PK: numeric ID
+  name: String # the name of the reason in French
+  definition: String # a definition of the reason in English
+}
+
+type confiscation_decision {
+  ID: Int # !PK: numeric ID
+  name: String # the name of the decision in French
+  definition: String # a definition of the decision in English
+}
+
+type unit {
+  ID: Int # !PK: numeric ID
+  name: String # the name of the relevant unit in French
+  definition: String
+}
+
+type location {
+  ID: Int
+}
+
+type person {
+  ID: Int
+  person_code: String!
+  person_name: String
+  sex: String
+  title: String
+  other_names: String
+  designation: String
+  status: String
+  birth_date: String
+  death_date: String
+  notes: String
+}
+
+type edition {
+  ID: Int
+  book_code: String!
+  super_book_code: String!
+  edition_status: String!
+  edition_type: String!
+  full_book_title: String
+  short_book_titles: String
+  translated_title: String
+  translated_language: String
+  languages: String
+  stated_publishers: String
+  actual_publishers: String
+  stated_publication_places: String
+  actual_publication_places: String
+  stated_publication_years: String
+  actual_publication_years: String
+  pages: String
+  quick_pages: String
+  number_of_volumes: Int
+  section: String
+  edition: String
+  book_sheets: String
+  notes: String
+  research_notes: String
+}
+
+type super_book {
+  ID: Int
+  super_book_code: String!
+  super_book_title: String!
+  keywords: String
+  parisian_keyword: String
+  illegality: String
+}

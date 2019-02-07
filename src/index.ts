@@ -1,3 +1,5 @@
+import * as GraphQLJSON from 'graphql-type-json';
+
 import { Options } from 'graphql-yoga';
 import { GraphQLServer } from 'graphql-yoga';
 
@@ -18,7 +20,8 @@ export function createServer() {
     typeDefs: './src/schema.graphql',
     resolvers: {
       Query: Query as any,
-      Mutation: Mutation as any
+      Mutation: Mutation as any,
+      JSON: GraphQLJSON
     },
     resolverValidationOptions: {
       requireResolversForResolveType: false
