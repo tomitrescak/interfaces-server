@@ -1,6 +1,10 @@
 export type Maybe<T> = T | null;
 
-export type ListType = "Unit" | "ConfiscationReason" | "ConfiscationDecision";
+export interface DataInput {
+  table?: Maybe<string>;
+
+  data?: Maybe<Json>;
+}
 
 /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
 export type Json = any;
@@ -14,41 +18,13 @@ export type Json = any;
 // ====================================================
 
 export interface Query {
-  searchConsignments: SearchOption[];
+  search: SearchOption[];
 
-  searchEdition: SearchOption[];
+  enumerator: DropdownOption[];
 
-  searchBook: SearchOption[];
+  find?: Maybe<Json>;
 
-  searchPerson: SearchOption[];
-
-  searchPlace: SearchOption[];
-
-  list: DropdownOption[];
-
-  confiscations?: Maybe<(Maybe<Confiscation>)[]>;
-
-  confiscation?: Maybe<Confiscation>;
-
-  editions?: Maybe<(Maybe<Edition>)[]>;
-
-  edition?: Maybe<Edition>;
-
-  books?: Maybe<(Maybe<SuperBook>)[]>;
-
-  book?: Maybe<SuperBook>;
-
-  persons?: Maybe<(Maybe<Person>)[]>;
-
-  person?: Maybe<Person>;
-
-  locations?: Maybe<(Maybe<Location>)[]>;
-
-  location?: Maybe<Location>;
-
-  consignments?: Maybe<(Maybe<Consignment>)[]>;
-
-  consignment?: Maybe<Consignment>;
+  findOne?: Maybe<Data>;
 }
 
 export interface SearchOption {
@@ -73,277 +49,46 @@ export interface DropdownOption {
   description?: Maybe<string>;
 }
 
-export interface Confiscation {
-  ID?: Maybe<number>;
+export interface Data {
+  id?: Maybe<string>;
 
-  UUID?: Maybe<string>;
+  table?: Maybe<string>;
 
-  consignment: number;
+  key?: Maybe<string>;
 
-  title?: Maybe<string>;
-
-  book_number?: Maybe<string>;
-
-  number?: Maybe<number>;
-
-  unit?: Maybe<number>;
-
-  confiscation_reason?: Maybe<number>;
-
-  confiscation_decision?: Maybe<number>;
-
-  date?: Maybe<string>;
-
-  censor_name?: Maybe<string>;
-
-  censor?: Maybe<string>;
-
-  sent_to_person_name?: Maybe<string>;
-
-  sent_to_person?: Maybe<string>;
-
-  sent_to_place_name?: Maybe<string>;
-
-  sent_to_place?: Maybe<string>;
-}
-
-export interface Edition {
-  ID?: Maybe<number>;
-
-  book_code: string;
-
-  super_book_code: string;
-
-  edition_status: string;
-
-  edition_type: string;
-
-  full_book_title?: Maybe<string>;
-
-  short_book_titles?: Maybe<string>;
-
-  translated_title?: Maybe<string>;
-
-  translated_language?: Maybe<string>;
-
-  languages?: Maybe<string>;
-
-  stated_publishers?: Maybe<string>;
-
-  actual_publishers?: Maybe<string>;
-
-  stated_publication_places?: Maybe<string>;
-
-  actual_publication_places?: Maybe<string>;
-
-  stated_publication_years?: Maybe<string>;
-
-  actual_publication_years?: Maybe<string>;
-
-  pages?: Maybe<string>;
-
-  quick_pages?: Maybe<string>;
-
-  number_of_volumes?: Maybe<number>;
-
-  section?: Maybe<string>;
-
-  edition?: Maybe<string>;
-
-  book_sheets?: Maybe<string>;
-
-  notes?: Maybe<string>;
-
-  research_notes?: Maybe<string>;
-}
-
-export interface SuperBook {
-  ID?: Maybe<number>;
-
-  super_book_code: string;
-
-  super_book_title: string;
-
-  keywords?: Maybe<string>;
-
-  parisian_keyword?: Maybe<string>;
-
-  illegality?: Maybe<string>;
-}
-
-export interface Person {
-  ID?: Maybe<number>;
-
-  person_code: string;
-
-  person_name?: Maybe<string>;
-
-  sex?: Maybe<string>;
-
-  title?: Maybe<string>;
-
-  other_names?: Maybe<string>;
-
-  designation?: Maybe<string>;
-
-  status?: Maybe<string>;
-
-  birth_date?: Maybe<string>;
-
-  death_date?: Maybe<string>;
-
-  notes?: Maybe<string>;
-}
-
-export interface Location {
-  ID?: Maybe<number>;
-}
-
-export interface Consignment {
-  ID?: Maybe<number>;
-
-  UUID?: Maybe<string>;
-
-  confiscation_register_ms?: Maybe<number>;
-
-  confiscation_register_folio?: Maybe<string>;
-
-  customs_register_ms?: Maybe<number>;
-
-  customs_register_folio?: Maybe<string>;
-
-  ms_21935_folio?: Maybe<string>;
-
-  shipping_number?: Maybe<string>;
-
-  marque?: Maybe<string>;
-
-  inspection_date?: Maybe<string>;
-
-  addressee_name?: Maybe<string>;
-
-  addressee_title?: Maybe<string>;
-
-  addressee?: Maybe<string>;
-
-  origin_text?: Maybe<string>;
-
-  origin_code?: Maybe<string>;
-
-  residual_collector_name?: Maybe<string>;
-
-  residual_collector?: Maybe<string>;
-
-  collector_signed?: Maybe<boolean>;
-
-  acquit_a_caution?: Maybe<string>;
-
-  confiscation_register_notes?: Maybe<string>;
-
-  customs_register_notes?: Maybe<string>;
+  data?: Maybe<Json>;
 }
 
 export interface Mutation {
-  saveConfiscation?: Maybe<Confiscation>;
-
-  saveEdition?: Maybe<Edition>;
-
-  saveBook?: Maybe<SuperBook>;
-
-  savePerson?: Maybe<Person>;
-
-  saveConsignment?: Maybe<Consignment>;
-
-  saveLocation?: Maybe<Person>;
+  save?: Maybe<Data>;
 }
 
 // ====================================================
 // Arguments
 // ====================================================
 
-export interface SearchConsignmentsQueryArgs {
+export interface SearchQueryArgs {
   searchString: string;
+
+  name?: Maybe<string>;
 }
-export interface SearchEditionQueryArgs {
+export interface EnumeratorQueryArgs {
+  name?: Maybe<string>;
+}
+export interface FindQueryArgs {
   searchString: string;
-}
-export interface SearchBookQueryArgs {
-  searchString: string;
-}
-export interface SearchPersonQueryArgs {
-  searchString: string;
-}
-export interface SearchPlaceQueryArgs {
-  searchString: string;
-}
-export interface ListQueryArgs {
-  name?: Maybe<ListType>;
-}
-export interface ConfiscationsQueryArgs {
-  searchString: string;
+
+  name: string;
 
   limit?: Maybe<number>;
 }
-export interface ConfiscationQueryArgs {
-  id: number;
-}
-export interface EditionsQueryArgs {
-  searchString: string;
+export interface FindOneQueryArgs {
+  id: string;
 
-  limit?: Maybe<number>;
+  table: string;
 }
-export interface EditionQueryArgs {
-  id: number;
-}
-export interface BooksQueryArgs {
-  searchString: string;
-
-  limit?: Maybe<number>;
-}
-export interface BookQueryArgs {
-  id: number;
-}
-export interface PersonsQueryArgs {
-  searchString: string;
-
-  limit?: Maybe<number>;
-}
-export interface PersonQueryArgs {
-  id: number;
-}
-export interface LocationsQueryArgs {
-  searchString: string;
-
-  limit?: Maybe<number>;
-}
-export interface LocationQueryArgs {
-  id: number;
-}
-export interface ConsignmentsQueryArgs {
-  searchString: string;
-
-  limit?: Maybe<number>;
-}
-export interface ConsignmentQueryArgs {
-  id: number;
-}
-export interface SaveConfiscationMutationArgs {
-  data?: Maybe<Json>;
-}
-export interface SaveEditionMutationArgs {
-  data?: Maybe<Json>;
-}
-export interface SaveBookMutationArgs {
-  data?: Maybe<Json>;
-}
-export interface SavePersonMutationArgs {
-  data?: Maybe<Json>;
-}
-export interface SaveConsignmentMutationArgs {
-  data?: Maybe<Json>;
-}
-export interface SaveLocationMutationArgs {
-  data?: Maybe<Json>;
+export interface SaveMutationArgs {
+  data?: Maybe<DataInput>;
 }
 
 import {
@@ -403,235 +148,57 @@ export type DirectiveResolverFn<TResult, TArgs = {}, TContext = {}> = (
 
 export namespace QueryResolvers {
   export interface Resolvers<Context = {}, TypeParent = {}> {
-    searchConsignments?: SearchConsignmentsResolver<
-      SearchOption[],
-      TypeParent,
-      Context
-    >;
+    search?: SearchResolver<SearchOption[], TypeParent, Context>;
 
-    searchEdition?: SearchEditionResolver<SearchOption[], TypeParent, Context>;
+    enumerator?: EnumeratorResolver<DropdownOption[], TypeParent, Context>;
 
-    searchBook?: SearchBookResolver<SearchOption[], TypeParent, Context>;
+    find?: FindResolver<Maybe<Json>, TypeParent, Context>;
 
-    searchPerson?: SearchPersonResolver<SearchOption[], TypeParent, Context>;
-
-    searchPlace?: SearchPlaceResolver<SearchOption[], TypeParent, Context>;
-
-    list?: ListResolver<DropdownOption[], TypeParent, Context>;
-
-    confiscations?: ConfiscationsResolver<
-      Maybe<(Maybe<Confiscation>)[]>,
-      TypeParent,
-      Context
-    >;
-
-    confiscation?: ConfiscationResolver<
-      Maybe<Confiscation>,
-      TypeParent,
-      Context
-    >;
-
-    editions?: EditionsResolver<Maybe<(Maybe<Edition>)[]>, TypeParent, Context>;
-
-    edition?: EditionResolver<Maybe<Edition>, TypeParent, Context>;
-
-    books?: BooksResolver<Maybe<(Maybe<SuperBook>)[]>, TypeParent, Context>;
-
-    book?: BookResolver<Maybe<SuperBook>, TypeParent, Context>;
-
-    persons?: PersonsResolver<Maybe<(Maybe<Person>)[]>, TypeParent, Context>;
-
-    person?: PersonResolver<Maybe<Person>, TypeParent, Context>;
-
-    locations?: LocationsResolver<
-      Maybe<(Maybe<Location>)[]>,
-      TypeParent,
-      Context
-    >;
-
-    location?: LocationResolver<Maybe<Location>, TypeParent, Context>;
-
-    consignments?: ConsignmentsResolver<
-      Maybe<(Maybe<Consignment>)[]>,
-      TypeParent,
-      Context
-    >;
-
-    consignment?: ConsignmentResolver<Maybe<Consignment>, TypeParent, Context>;
+    findOne?: FindOneResolver<Maybe<Data>, TypeParent, Context>;
   }
 
-  export type SearchConsignmentsResolver<
+  export type SearchResolver<
     R = SearchOption[],
     Parent = {},
     Context = {}
-  > = Resolver<R, Parent, Context, SearchConsignmentsArgs>;
-  export interface SearchConsignmentsArgs {
+  > = Resolver<R, Parent, Context, SearchArgs>;
+  export interface SearchArgs {
     searchString: string;
+
+    name?: Maybe<string>;
   }
 
-  export type SearchEditionResolver<
-    R = SearchOption[],
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, SearchEditionArgs>;
-  export interface SearchEditionArgs {
-    searchString: string;
-  }
-
-  export type SearchBookResolver<
-    R = SearchOption[],
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, SearchBookArgs>;
-  export interface SearchBookArgs {
-    searchString: string;
-  }
-
-  export type SearchPersonResolver<
-    R = SearchOption[],
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, SearchPersonArgs>;
-  export interface SearchPersonArgs {
-    searchString: string;
-  }
-
-  export type SearchPlaceResolver<
-    R = SearchOption[],
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, SearchPlaceArgs>;
-  export interface SearchPlaceArgs {
-    searchString: string;
-  }
-
-  export type ListResolver<
+  export type EnumeratorResolver<
     R = DropdownOption[],
     Parent = {},
     Context = {}
-  > = Resolver<R, Parent, Context, ListArgs>;
-  export interface ListArgs {
-    name?: Maybe<ListType>;
+  > = Resolver<R, Parent, Context, EnumeratorArgs>;
+  export interface EnumeratorArgs {
+    name?: Maybe<string>;
   }
 
-  export type ConfiscationsResolver<
-    R = Maybe<(Maybe<Confiscation>)[]>,
+  export type FindResolver<
+    R = Maybe<Json>,
     Parent = {},
     Context = {}
-  > = Resolver<R, Parent, Context, ConfiscationsArgs>;
-  export interface ConfiscationsArgs {
+  > = Resolver<R, Parent, Context, FindArgs>;
+  export interface FindArgs {
     searchString: string;
+
+    name: string;
 
     limit?: Maybe<number>;
   }
 
-  export type ConfiscationResolver<
-    R = Maybe<Confiscation>,
+  export type FindOneResolver<
+    R = Maybe<Data>,
     Parent = {},
     Context = {}
-  > = Resolver<R, Parent, Context, ConfiscationArgs>;
-  export interface ConfiscationArgs {
-    id: number;
-  }
+  > = Resolver<R, Parent, Context, FindOneArgs>;
+  export interface FindOneArgs {
+    id: string;
 
-  export type EditionsResolver<
-    R = Maybe<(Maybe<Edition>)[]>,
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, EditionsArgs>;
-  export interface EditionsArgs {
-    searchString: string;
-
-    limit?: Maybe<number>;
-  }
-
-  export type EditionResolver<
-    R = Maybe<Edition>,
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, EditionArgs>;
-  export interface EditionArgs {
-    id: number;
-  }
-
-  export type BooksResolver<
-    R = Maybe<(Maybe<SuperBook>)[]>,
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, BooksArgs>;
-  export interface BooksArgs {
-    searchString: string;
-
-    limit?: Maybe<number>;
-  }
-
-  export type BookResolver<
-    R = Maybe<SuperBook>,
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, BookArgs>;
-  export interface BookArgs {
-    id: number;
-  }
-
-  export type PersonsResolver<
-    R = Maybe<(Maybe<Person>)[]>,
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, PersonsArgs>;
-  export interface PersonsArgs {
-    searchString: string;
-
-    limit?: Maybe<number>;
-  }
-
-  export type PersonResolver<
-    R = Maybe<Person>,
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, PersonArgs>;
-  export interface PersonArgs {
-    id: number;
-  }
-
-  export type LocationsResolver<
-    R = Maybe<(Maybe<Location>)[]>,
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, LocationsArgs>;
-  export interface LocationsArgs {
-    searchString: string;
-
-    limit?: Maybe<number>;
-  }
-
-  export type LocationResolver<
-    R = Maybe<Location>,
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, LocationArgs>;
-  export interface LocationArgs {
-    id: number;
-  }
-
-  export type ConsignmentsResolver<
-    R = Maybe<(Maybe<Consignment>)[]>,
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, ConsignmentsArgs>;
-  export interface ConsignmentsArgs {
-    searchString: string;
-
-    limit?: Maybe<number>;
-  }
-
-  export type ConsignmentResolver<
-    R = Maybe<Consignment>,
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, ConsignmentArgs>;
-  export interface ConsignmentArgs {
-    id: number;
+    table: string;
   }
 }
 
@@ -708,776 +275,51 @@ export namespace DropdownOptionResolvers {
   > = Resolver<R, Parent, Context>;
 }
 
-export namespace ConfiscationResolvers {
-  export interface Resolvers<Context = {}, TypeParent = Confiscation> {
-    ID?: IdResolver<Maybe<number>, TypeParent, Context>;
+export namespace DataResolvers {
+  export interface Resolvers<Context = {}, TypeParent = Data> {
+    id?: IdResolver<Maybe<string>, TypeParent, Context>;
 
-    UUID?: UuidResolver<Maybe<string>, TypeParent, Context>;
+    table?: TableResolver<Maybe<string>, TypeParent, Context>;
 
-    consignment?: ConsignmentResolver<number, TypeParent, Context>;
+    key?: KeyResolver<Maybe<string>, TypeParent, Context>;
 
-    title?: TitleResolver<Maybe<string>, TypeParent, Context>;
-
-    book_number?: BookNumberResolver<Maybe<string>, TypeParent, Context>;
-
-    number?: NumberResolver<Maybe<number>, TypeParent, Context>;
-
-    unit?: UnitResolver<Maybe<number>, TypeParent, Context>;
-
-    confiscation_reason?: ConfiscationReasonResolver<
-      Maybe<number>,
-      TypeParent,
-      Context
-    >;
-
-    confiscation_decision?: ConfiscationDecisionResolver<
-      Maybe<number>,
-      TypeParent,
-      Context
-    >;
-
-    date?: DateResolver<Maybe<string>, TypeParent, Context>;
-
-    censor_name?: CensorNameResolver<Maybe<string>, TypeParent, Context>;
-
-    censor?: CensorResolver<Maybe<string>, TypeParent, Context>;
-
-    sent_to_person_name?: SentToPersonNameResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    sent_to_person?: SentToPersonResolver<Maybe<string>, TypeParent, Context>;
-
-    sent_to_place_name?: SentToPlaceNameResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    sent_to_place?: SentToPlaceResolver<Maybe<string>, TypeParent, Context>;
+    data?: DataResolver<Maybe<Json>, TypeParent, Context>;
   }
 
   export type IdResolver<
-    R = Maybe<number>,
-    Parent = Confiscation,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type UuidResolver<
     R = Maybe<string>,
-    Parent = Confiscation,
+    Parent = Data,
     Context = {}
   > = Resolver<R, Parent, Context>;
-  export type ConsignmentResolver<
-    R = number,
-    Parent = Confiscation,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type TitleResolver<
+  export type TableResolver<
     R = Maybe<string>,
-    Parent = Confiscation,
+    Parent = Data,
     Context = {}
   > = Resolver<R, Parent, Context>;
-  export type BookNumberResolver<
+  export type KeyResolver<
     R = Maybe<string>,
-    Parent = Confiscation,
+    Parent = Data,
     Context = {}
   > = Resolver<R, Parent, Context>;
-  export type NumberResolver<
-    R = Maybe<number>,
-    Parent = Confiscation,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type UnitResolver<
-    R = Maybe<number>,
-    Parent = Confiscation,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type ConfiscationReasonResolver<
-    R = Maybe<number>,
-    Parent = Confiscation,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type ConfiscationDecisionResolver<
-    R = Maybe<number>,
-    Parent = Confiscation,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type DateResolver<
-    R = Maybe<string>,
-    Parent = Confiscation,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type CensorNameResolver<
-    R = Maybe<string>,
-    Parent = Confiscation,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type CensorResolver<
-    R = Maybe<string>,
-    Parent = Confiscation,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type SentToPersonNameResolver<
-    R = Maybe<string>,
-    Parent = Confiscation,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type SentToPersonResolver<
-    R = Maybe<string>,
-    Parent = Confiscation,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type SentToPlaceNameResolver<
-    R = Maybe<string>,
-    Parent = Confiscation,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type SentToPlaceResolver<
-    R = Maybe<string>,
-    Parent = Confiscation,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-}
-
-export namespace EditionResolvers {
-  export interface Resolvers<Context = {}, TypeParent = Edition> {
-    ID?: IdResolver<Maybe<number>, TypeParent, Context>;
-
-    book_code?: BookCodeResolver<string, TypeParent, Context>;
-
-    super_book_code?: SuperBookCodeResolver<string, TypeParent, Context>;
-
-    edition_status?: EditionStatusResolver<string, TypeParent, Context>;
-
-    edition_type?: EditionTypeResolver<string, TypeParent, Context>;
-
-    full_book_title?: FullBookTitleResolver<Maybe<string>, TypeParent, Context>;
-
-    short_book_titles?: ShortBookTitlesResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    translated_title?: TranslatedTitleResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    translated_language?: TranslatedLanguageResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    languages?: LanguagesResolver<Maybe<string>, TypeParent, Context>;
-
-    stated_publishers?: StatedPublishersResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    actual_publishers?: ActualPublishersResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    stated_publication_places?: StatedPublicationPlacesResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    actual_publication_places?: ActualPublicationPlacesResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    stated_publication_years?: StatedPublicationYearsResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    actual_publication_years?: ActualPublicationYearsResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    pages?: PagesResolver<Maybe<string>, TypeParent, Context>;
-
-    quick_pages?: QuickPagesResolver<Maybe<string>, TypeParent, Context>;
-
-    number_of_volumes?: NumberOfVolumesResolver<
-      Maybe<number>,
-      TypeParent,
-      Context
-    >;
-
-    section?: SectionResolver<Maybe<string>, TypeParent, Context>;
-
-    edition?: EditionResolver<Maybe<string>, TypeParent, Context>;
-
-    book_sheets?: BookSheetsResolver<Maybe<string>, TypeParent, Context>;
-
-    notes?: NotesResolver<Maybe<string>, TypeParent, Context>;
-
-    research_notes?: ResearchNotesResolver<Maybe<string>, TypeParent, Context>;
-  }
-
-  export type IdResolver<
-    R = Maybe<number>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type BookCodeResolver<
-    R = string,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type SuperBookCodeResolver<
-    R = string,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type EditionStatusResolver<
-    R = string,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type EditionTypeResolver<
-    R = string,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type FullBookTitleResolver<
-    R = Maybe<string>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type ShortBookTitlesResolver<
-    R = Maybe<string>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type TranslatedTitleResolver<
-    R = Maybe<string>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type TranslatedLanguageResolver<
-    R = Maybe<string>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type LanguagesResolver<
-    R = Maybe<string>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type StatedPublishersResolver<
-    R = Maybe<string>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type ActualPublishersResolver<
-    R = Maybe<string>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type StatedPublicationPlacesResolver<
-    R = Maybe<string>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type ActualPublicationPlacesResolver<
-    R = Maybe<string>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type StatedPublicationYearsResolver<
-    R = Maybe<string>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type ActualPublicationYearsResolver<
-    R = Maybe<string>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type PagesResolver<
-    R = Maybe<string>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type QuickPagesResolver<
-    R = Maybe<string>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type NumberOfVolumesResolver<
-    R = Maybe<number>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type SectionResolver<
-    R = Maybe<string>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type EditionResolver<
-    R = Maybe<string>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type BookSheetsResolver<
-    R = Maybe<string>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type NotesResolver<
-    R = Maybe<string>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type ResearchNotesResolver<
-    R = Maybe<string>,
-    Parent = Edition,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-}
-
-export namespace SuperBookResolvers {
-  export interface Resolvers<Context = {}, TypeParent = SuperBook> {
-    ID?: IdResolver<Maybe<number>, TypeParent, Context>;
-
-    super_book_code?: SuperBookCodeResolver<string, TypeParent, Context>;
-
-    super_book_title?: SuperBookTitleResolver<string, TypeParent, Context>;
-
-    keywords?: KeywordsResolver<Maybe<string>, TypeParent, Context>;
-
-    parisian_keyword?: ParisianKeywordResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    illegality?: IllegalityResolver<Maybe<string>, TypeParent, Context>;
-  }
-
-  export type IdResolver<
-    R = Maybe<number>,
-    Parent = SuperBook,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type SuperBookCodeResolver<
-    R = string,
-    Parent = SuperBook,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type SuperBookTitleResolver<
-    R = string,
-    Parent = SuperBook,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type KeywordsResolver<
-    R = Maybe<string>,
-    Parent = SuperBook,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type ParisianKeywordResolver<
-    R = Maybe<string>,
-    Parent = SuperBook,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type IllegalityResolver<
-    R = Maybe<string>,
-    Parent = SuperBook,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-}
-
-export namespace PersonResolvers {
-  export interface Resolvers<Context = {}, TypeParent = Person> {
-    ID?: IdResolver<Maybe<number>, TypeParent, Context>;
-
-    person_code?: PersonCodeResolver<string, TypeParent, Context>;
-
-    person_name?: PersonNameResolver<Maybe<string>, TypeParent, Context>;
-
-    sex?: SexResolver<Maybe<string>, TypeParent, Context>;
-
-    title?: TitleResolver<Maybe<string>, TypeParent, Context>;
-
-    other_names?: OtherNamesResolver<Maybe<string>, TypeParent, Context>;
-
-    designation?: DesignationResolver<Maybe<string>, TypeParent, Context>;
-
-    status?: StatusResolver<Maybe<string>, TypeParent, Context>;
-
-    birth_date?: BirthDateResolver<Maybe<string>, TypeParent, Context>;
-
-    death_date?: DeathDateResolver<Maybe<string>, TypeParent, Context>;
-
-    notes?: NotesResolver<Maybe<string>, TypeParent, Context>;
-  }
-
-  export type IdResolver<
-    R = Maybe<number>,
-    Parent = Person,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type PersonCodeResolver<
-    R = string,
-    Parent = Person,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type PersonNameResolver<
-    R = Maybe<string>,
-    Parent = Person,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type SexResolver<
-    R = Maybe<string>,
-    Parent = Person,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type TitleResolver<
-    R = Maybe<string>,
-    Parent = Person,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type OtherNamesResolver<
-    R = Maybe<string>,
-    Parent = Person,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type DesignationResolver<
-    R = Maybe<string>,
-    Parent = Person,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type StatusResolver<
-    R = Maybe<string>,
-    Parent = Person,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type BirthDateResolver<
-    R = Maybe<string>,
-    Parent = Person,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type DeathDateResolver<
-    R = Maybe<string>,
-    Parent = Person,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type NotesResolver<
-    R = Maybe<string>,
-    Parent = Person,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-}
-
-export namespace LocationResolvers {
-  export interface Resolvers<Context = {}, TypeParent = Location> {
-    ID?: IdResolver<Maybe<number>, TypeParent, Context>;
-  }
-
-  export type IdResolver<
-    R = Maybe<number>,
-    Parent = Location,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-}
-
-export namespace ConsignmentResolvers {
-  export interface Resolvers<Context = {}, TypeParent = Consignment> {
-    ID?: IdResolver<Maybe<number>, TypeParent, Context>;
-
-    UUID?: UuidResolver<Maybe<string>, TypeParent, Context>;
-
-    confiscation_register_ms?: ConfiscationRegisterMsResolver<
-      Maybe<number>,
-      TypeParent,
-      Context
-    >;
-
-    confiscation_register_folio?: ConfiscationRegisterFolioResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    customs_register_ms?: CustomsRegisterMsResolver<
-      Maybe<number>,
-      TypeParent,
-      Context
-    >;
-
-    customs_register_folio?: CustomsRegisterFolioResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    ms_21935_folio?: Ms_21935FolioResolver<Maybe<string>, TypeParent, Context>;
-
-    shipping_number?: ShippingNumberResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    marque?: MarqueResolver<Maybe<string>, TypeParent, Context>;
-
-    inspection_date?: InspectionDateResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    addressee_name?: AddresseeNameResolver<Maybe<string>, TypeParent, Context>;
-
-    addressee_title?: AddresseeTitleResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    addressee?: AddresseeResolver<Maybe<string>, TypeParent, Context>;
-
-    origin_text?: OriginTextResolver<Maybe<string>, TypeParent, Context>;
-
-    origin_code?: OriginCodeResolver<Maybe<string>, TypeParent, Context>;
-
-    residual_collector_name?: ResidualCollectorNameResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    residual_collector?: ResidualCollectorResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    collector_signed?: CollectorSignedResolver<
-      Maybe<boolean>,
-      TypeParent,
-      Context
-    >;
-
-    acquit_a_caution?: AcquitACautionResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    confiscation_register_notes?: ConfiscationRegisterNotesResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-
-    customs_register_notes?: CustomsRegisterNotesResolver<
-      Maybe<string>,
-      TypeParent,
-      Context
-    >;
-  }
-
-  export type IdResolver<
-    R = Maybe<number>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type UuidResolver<
-    R = Maybe<string>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type ConfiscationRegisterMsResolver<
-    R = Maybe<number>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type ConfiscationRegisterFolioResolver<
-    R = Maybe<string>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type CustomsRegisterMsResolver<
-    R = Maybe<number>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type CustomsRegisterFolioResolver<
-    R = Maybe<string>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type Ms_21935FolioResolver<
-    R = Maybe<string>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type ShippingNumberResolver<
-    R = Maybe<string>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type MarqueResolver<
-    R = Maybe<string>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type InspectionDateResolver<
-    R = Maybe<string>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type AddresseeNameResolver<
-    R = Maybe<string>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type AddresseeTitleResolver<
-    R = Maybe<string>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type AddresseeResolver<
-    R = Maybe<string>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type OriginTextResolver<
-    R = Maybe<string>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type OriginCodeResolver<
-    R = Maybe<string>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type ResidualCollectorNameResolver<
-    R = Maybe<string>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type ResidualCollectorResolver<
-    R = Maybe<string>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type CollectorSignedResolver<
-    R = Maybe<boolean>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type AcquitACautionResolver<
-    R = Maybe<string>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type ConfiscationRegisterNotesResolver<
-    R = Maybe<string>,
-    Parent = Consignment,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type CustomsRegisterNotesResolver<
-    R = Maybe<string>,
-    Parent = Consignment,
+  export type DataResolver<
+    R = Maybe<Json>,
+    Parent = Data,
     Context = {}
   > = Resolver<R, Parent, Context>;
 }
 
 export namespace MutationResolvers {
   export interface Resolvers<Context = {}, TypeParent = {}> {
-    saveConfiscation?: SaveConfiscationResolver<
-      Maybe<Confiscation>,
-      TypeParent,
-      Context
-    >;
-
-    saveEdition?: SaveEditionResolver<Maybe<Edition>, TypeParent, Context>;
-
-    saveBook?: SaveBookResolver<Maybe<SuperBook>, TypeParent, Context>;
-
-    savePerson?: SavePersonResolver<Maybe<Person>, TypeParent, Context>;
-
-    saveConsignment?: SaveConsignmentResolver<
-      Maybe<Consignment>,
-      TypeParent,
-      Context
-    >;
-
-    saveLocation?: SaveLocationResolver<Maybe<Person>, TypeParent, Context>;
+    save?: SaveResolver<Maybe<Data>, TypeParent, Context>;
   }
 
-  export type SaveConfiscationResolver<
-    R = Maybe<Confiscation>,
+  export type SaveResolver<
+    R = Maybe<Data>,
     Parent = {},
     Context = {}
-  > = Resolver<R, Parent, Context, SaveConfiscationArgs>;
-  export interface SaveConfiscationArgs {
-    data?: Maybe<Json>;
-  }
-
-  export type SaveEditionResolver<
-    R = Maybe<Edition>,
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, SaveEditionArgs>;
-  export interface SaveEditionArgs {
-    data?: Maybe<Json>;
-  }
-
-  export type SaveBookResolver<
-    R = Maybe<SuperBook>,
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, SaveBookArgs>;
-  export interface SaveBookArgs {
-    data?: Maybe<Json>;
-  }
-
-  export type SavePersonResolver<
-    R = Maybe<Person>,
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, SavePersonArgs>;
-  export interface SavePersonArgs {
-    data?: Maybe<Json>;
-  }
-
-  export type SaveConsignmentResolver<
-    R = Maybe<Consignment>,
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, SaveConsignmentArgs>;
-  export interface SaveConsignmentArgs {
-    data?: Maybe<Json>;
-  }
-
-  export type SaveLocationResolver<
-    R = Maybe<Person>,
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, SaveLocationArgs>;
-  export interface SaveLocationArgs {
-    data?: Maybe<Json>;
+  > = Resolver<R, Parent, Context, SaveArgs>;
+  export interface SaveArgs {
+    data?: Maybe<DataInput>;
   }
 }
 
@@ -1522,12 +364,7 @@ export interface IResolvers<Context = {}> {
   Query?: QueryResolvers.Resolvers<Context>;
   SearchOption?: SearchOptionResolvers.Resolvers<Context>;
   DropdownOption?: DropdownOptionResolvers.Resolvers<Context>;
-  Confiscation?: ConfiscationResolvers.Resolvers<Context>;
-  Edition?: EditionResolvers.Resolvers<Context>;
-  SuperBook?: SuperBookResolvers.Resolvers<Context>;
-  Person?: PersonResolvers.Resolvers<Context>;
-  Location?: LocationResolvers.Resolvers<Context>;
-  Consignment?: ConsignmentResolvers.Resolvers<Context>;
+  Data?: DataResolvers.Resolvers<Context>;
   Mutation?: MutationResolvers.Resolvers<Context>;
   Json?: GraphQLScalarType;
 }

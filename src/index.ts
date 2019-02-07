@@ -3,8 +3,8 @@ import * as GraphQLJSON from 'graphql-type-json';
 import { Options } from 'graphql-yoga';
 import { GraphQLServer } from 'graphql-yoga';
 
-import { Query } from './queries';
-import { Mutation } from './mutations';
+import { Query } from './helpers/queries';
+import { Mutation } from './helpers/mutations';
 import { db, Database } from './helpers/client';
 
 declare global {

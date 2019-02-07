@@ -17,39 +17,26 @@ type SearchOption {
   description: String
 }
 
-enum ListType {
-  Unit
-  ConfiscationReason
-  ConfiscationDecision
+type Data {
+  id: String
+  table: String
+  key: String
+  data: JSON
+}
+
+input DataInput {
+  table: String
+  data: JSON
 }
 
 type Query {
-  searchConsignments(searchString: String!): [SearchOption!]!
-  searchEdition(searchString: String!): [SearchOption!]!
-  searchBook(searchString: String!): [SearchOption!]!
-  searchPerson(searchString: String!): [SearchOption!]!
-  searchPlace(searchString: String!): [SearchOption!]!
-  list(name: ListType): [DropdownOption!]!
+  search(searchString: String!, name: String): [SearchOption!]!
+  enumerator(name: String): [DropdownOption!]!
 
-  confiscations(searchString: String!, limit: Int): [confiscation]
-  confiscation(id: Int!): confiscation
-  editions(searchString: String!, limit: Int): [edition]
-  edition(id: String!): edition
-  books(searchString: String!, limit: Int): [super_book]
-  book(id: String!): super_book
-  persons(searchString: String!, limit: Int): [person]
-  person(id: String!): person
-  locations(searchString: String!, limit: Int): [location]
-  location(id: Int!): location
-  consignments(searchString: String!, limit: Int): [consignment]
-  consignment(id: Int!): consignment
+  find(searchString: String!, name: String!, limit: Int): JSON
+  findOne(id: String!, table: String!): Data
 }
 
 type Mutation {
-  saveConfiscation(data: JSON): confiscation
-  saveEdition(data: JSON): edition
-  saveBook(data: JSON): super_book
-  savePerson(data: JSON): person
-  saveConsignment(data: JSON): consignment
-  saveLocation(data: JSON): person
+  save(data: DataInput): Data
 }
