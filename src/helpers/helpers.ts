@@ -1,4 +1,4 @@
-export type TableConfig = {
+export interface TableConfig {
   /**
    * Table name as it appears in the database
    */
@@ -16,15 +16,15 @@ export type TableConfig = {
    * Type of the ID [string or int]
    */
   idType?: 'string' | 'int';
-};
+}
 
-export type ViewConfig = {
+export interface ViewConfig {
   name: string;
   table: string;
   fields?: string[];
-};
+}
 
-export type SearchConfig = {
+export interface SearchConfig {
   name: string;
   view: string;
   title?: string;
@@ -33,14 +33,14 @@ export type SearchConfig = {
     field: string;
     type?: 'string' | 'int' | 'date';
   }>;
-};
+}
 
-export type Config = {
+export interface Config {
   enumerators: string[];
   tables: TableConfig[];
   views: ViewConfig[];
   search: SearchConfig[];
-};
+}
 
 export function clean(value: any) {
   if (!value || value === '?' || value === 'null' || value === 'undefined') {

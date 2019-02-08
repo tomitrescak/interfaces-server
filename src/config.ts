@@ -1,4 +1,4 @@
-import { clean, Config } from 'helpers/helpers';
+import { Config } from 'helpers/helpers';
 
 export const config: Config = {
   enumerators: ['confiscation_decision', 'confiscation_reason', 'unit'],

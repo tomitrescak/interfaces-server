@@ -24,11 +24,6 @@ type Data {
   data: JSON
 }
 
-input DataInput {
-  table: String
-  data: JSON
-}
-
 type Query {
   search(searchString: String!, name: String): [SearchOption!]!
   enumerator(name: String): [DropdownOption!]!
@@ -38,5 +33,5 @@ type Query {
 }
 
 type Mutation {
-  save(data: DataInput): Data
+  save(table: String, data: JSON): Data
 }

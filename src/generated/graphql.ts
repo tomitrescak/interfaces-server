@@ -1,11 +1,5 @@
 export type Maybe<T> = T | null;
 
-export interface DataInput {
-  table?: Maybe<string>;
-
-  data?: Maybe<Json>;
-}
-
 /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
 export type Json = any;
 
@@ -88,7 +82,9 @@ export interface FindOneQueryArgs {
   table: string;
 }
 export interface SaveMutationArgs {
-  data?: Maybe<DataInput>;
+  table?: Maybe<string>;
+
+  data?: Maybe<Json>;
 }
 
 import {
@@ -319,7 +315,9 @@ export namespace MutationResolvers {
     Context = {}
   > = Resolver<R, Parent, Context, SaveArgs>;
   export interface SaveArgs {
-    data?: Maybe<DataInput>;
+    table?: Maybe<string>;
+
+    data?: Maybe<Json>;
   }
 }
 

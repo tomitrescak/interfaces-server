@@ -1,10 +1,9 @@
 import * as Gql from '../generated/graphql';
 import { config } from '../config';
 
-async function update(ctx: App.Context, input: Gql.DataInput) {
-  let conf = config.tables.find(t => t.tableName === input.table);
+async function update(ctx: App.Context, table: string, source: any) {
+  let conf = config.tables.find(t => t.tableName === table);
 
-  const source = input.data;
   let result;
   // insert
   if (!source[conf.idName]) {
@@ -23,8 +22,8 @@ async function update(ctx: App.Context, input: Gql.DataInput) {
 }
 
 export const Mutation: Gql.MutationResolvers.Resolvers<App.Context> = {
-  async save(_, { data }, ctx) {
-    return update(ctx, data);
+  async save(_, { data, table }, ctx) {
+    return update(ctx, table, data);
   }
   // async saveConfiscation(_, { data }, ctx) {
   //   return update(ctx, 'confiscation', data);

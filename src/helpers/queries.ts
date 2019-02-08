@@ -19,6 +19,7 @@ function findRecords<T>(
     for (let i = 1; i < parts.length; i++) {
       sql += ` AND ${config.fields[i]} = ?`;
     }
+    sql += ` ORDER BY ${config.fields[0]} LIMIT ${limit}`;
   } else {
     parts = searchString.split(' ').map(s => `%${s.trim()}%`);
     sql = `SELECT * FROM ${config.table} WHERE ${config.fields[0]} LIKE ?`;
@@ -38,7 +39,7 @@ let reg = /\{(\S+)\}/;
 function interpolate(title: string, obj: any) {
   let match = title.match(reg);
   while (match) {
-    title = title.replace(match[0], obj[match[1]]);
+    title = title.replace(match[0], clean(obj[match[1]]));
     match = title.match(reg);
   }
   return title;
@@ -56,7 +57,7 @@ export const Query: Gql.QueryResolvers.Resolvers<App.Context> = {
   find(_, { searchString, name, limit }, ctx) {
     let conf = config.views.find(f => f.name === name);
     if (!conf) {
-      throw new Error('Find config not allowed!');
+      throw new Error('Find config not allowed!: ' + name);
     }
     return findRecords(ctx, searchString, conf, limit);
   },
