@@ -80,6 +80,11 @@ export const config: Config = {
   ],
   search: [
     {
+      name: 'super_book',
+      view: 'super_book',
+      title: `{super_book_title}`
+    },
+    {
       name: 'edition',
       view: 'edition',
       title: `{full_book_title} [{edition_type}, {stated_publication_years}, {actual_publication_places}, {book_code}, {super_book_code}]`

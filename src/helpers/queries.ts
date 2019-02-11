@@ -1,5 +1,5 @@
 import * as Gql from '../generated/graphql';
-import { ViewConfig, clean } from './helpers';
+import { ViewConfig, clean, SearchConfig, TableConfig } from './helpers';
 import { config } from '../config';
 
 function findRecords<T>(
@@ -33,6 +33,36 @@ function findRecords<T>(
 
 function findRecord<T>(ctx: App.Context, tableName: string, idName: string, id: any) {
   return ctx.db.findOne<T>(`SELECT * FROM ${tableName} WHERE ${idName} = ?`, id);
+}
+
+function createTitles(conf: SearchConfig, result: any, table: TableConfig, addHeader = true) {
+  // simple title
+  if (conf.title) {
+    return result.map((r: any) => ({
+      key: r[table.idName],
+      title: interpolate(conf.title, r),
+      value: r[table.idName]
+    }));
+  }
+  // table view
+  if (conf.titles) {
+    const fields: Gql.SearchOption[] = result.map((r: any) => ({
+      key: r.ID.toString(),
+      value: r.ID.toString(),
+      titles: conf.titles.map(t => (t.type === 'date' ? new Date(r[t.field]) : clean(r[t.field])))
+    }));
+
+    if (addHeader) {
+      // now add header as the first row
+      fields.unshift({
+        key: '-1',
+        value: undefined as any,
+        titles: conf.titles.map(t => t.header)
+      });
+    }
+
+    return fields;
+  }
 }
 
 let reg = /\{(\S+)\}/;
@@ -76,40 +106,22 @@ export const Query: Gql.QueryResolvers.Resolvers<App.Context> = {
       data
     };
   },
-  async search(_, { searchString, name }, ctx): Promise<Gql.SearchOption[]> {
-    let conf = config.search.find(f => f.name === name);
+  async search(_, { searchString, name, id }, ctx): Promise<Gql.SearchOption[]> {
+    const conf = config.search.find(f => f.name === name);
     if (!conf) {
-      throw new Error('Find config not allowed!');
+      throw new Error('Search config not allowed!');
     }
-    let view = config.views.find(v => v.name === conf.view);
-    let table = config.tables.find(t => t.tableName === view.table);
+
+    const view = config.views.find(v => v.name === conf.view);
+    const table = config.tables.find(t => t.tableName === view.table);
+
+    // we can be searching only for id column
+    if (id) {
+      const record = await Query.findOne(_, { id, table: table.tableName }, ctx, null);
+      return createTitles(conf, [record.data], table, false);
+    }
 
     const result = await Query.find(_, { searchString, name: conf.view, limit: 10 }, ctx, null);
-
-    // simple title
-    if (conf.title) {
-      return result.map((r: any) => ({
-        key: r[table.idName],
-        title: interpolate(conf.title, r),
-        value: r[table.idName]
-      }));
-    }
-    // table view
-    if (conf.titles) {
-      const fields: Gql.SearchOption[] = result.map((r: any) => ({
-        key: r.ID.toString(),
-        value: r.ID.toString(),
-        titles: conf.titles.map(t => (t.type === 'date' ? new Date(r[t.field]) : clean(r[t.field])))
-      }));
-
-      // now add header as the first row
-      fields.unshift({
-        key: '-1',
-        value: undefined as any,
-        titles: conf.titles.map(t => t.header)
-      });
-
-      return fields;
-    }
+    return createTitles(conf, result, table);
   }
 };

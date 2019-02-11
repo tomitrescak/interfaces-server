@@ -1,4 +1,6 @@
 import * as GraphQLJSON from 'graphql-type-json';
+import * as express from 'express';
+import * as path from 'path';
 
 import { Options } from 'graphql-yoga';
 import { GraphQLServer } from 'graphql-yoga';
@@ -33,6 +35,11 @@ export function createServer() {
 const server = createServer();
 
 server.start(
+  {
+    endpoint: '/graphql',
+    playground: '/graphiql',
+    port: process.env.PORT || 4000
+  },
   // {
   //   cors: {
   //     credentials: true,
@@ -43,3 +50,10 @@ server.start(
     console.log(`Server running on http://localhost:${options.port}`);
   }
 );
+
+const root = path.join(__dirname, '../build');
+
+server.express.use(express.static(root));
+server.express.get('/*', function(req, res) {
+  res.sendFile(path.join(root, 'index.html'));
+});

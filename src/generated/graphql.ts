@@ -65,6 +65,8 @@ export interface SearchQueryArgs {
   searchString: string;
 
   name?: Maybe<string>;
+
+  id?: Maybe<string>;
 }
 export interface EnumeratorQueryArgs {
   name?: Maybe<string>;
@@ -162,6 +164,8 @@ export namespace QueryResolvers {
     searchString: string;
 
     name?: Maybe<string>;
+
+    id?: Maybe<string>;
   }
 
   export type EnumeratorResolver<

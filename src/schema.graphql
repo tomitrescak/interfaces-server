@@ -25,7 +25,7 @@ type Data {
 }
 
 type Query {
-  search(searchString: String!, name: String): [SearchOption!]!
+  search(searchString: String!, name: String, id: String): [SearchOption!]!
   enumerator(name: String): [DropdownOption!]!
 
   find(searchString: String!, name: String!, limit: Int): JSON
