@@ -1,0 +1,13 @@
+{
+  "uid": "interfaces",
+  "append": true,
+  "start": true,
+  "watch": true,
+  "watchDirectory": "./build",
+  "script": "src/index.ts",
+  "command": "node --nolazy -r ts-node/register/transpile-only",
+  "sourceDir": ".",
+  "logFile": "forever.log",
+  "outFile": "out.log",
+  "errFile": "error.log"
+}
