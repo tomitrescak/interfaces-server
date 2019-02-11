@@ -1,6 +1,7 @@
 import * as GraphQLJSON from 'graphql-type-json';
 import * as express from 'express';
 import * as path from 'path';
+import * as compression from 'compression';
 
 import { Options } from 'graphql-yoga';
 import { GraphQLServer } from 'graphql-yoga';
@@ -53,6 +54,7 @@ server.start(
 
 const root = path.join(__dirname, '../build');
 
+server.express.use(compression());
 server.express.use(express.static(root));
 server.express.get('/*', function(req, res) {
   res.sendFile(path.join(root, 'index.html'));
