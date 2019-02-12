@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "TS_NODE_TRANSPILE_ONLY=true nodemon -e ts,graphql -x node --inspect=5858 -r ts-node/register src/index.ts",
+    "dev": "nodemon -e ts,graphql -x node --inspect=5858 -r ts-node/register/transpile-only src/index.ts",
     "start": "forever start ./forever.json",
     "stop": "forever stop interfaces",
     "gql": "gql-gen --config codegen.yml",

@@ -37,7 +37,7 @@ const options = {
   user: 'root',
   host: 'localhost',
   port: process.env.MYSQL_PORT ? parseInt(process.env.MYSQL_PORT, 10) : 3306,
-  password: 'prisma',
+//  password: '',
   database: 'confiscations'
 };
 

@@ -82,12 +82,24 @@ export const config: Config = {
     {
       name: 'super_book',
       view: 'super_book',
-      title: `{super_book_title}`
+      title: '{super_book_title}'
     },
     {
       name: 'edition',
       view: 'edition',
-      title: `{full_book_title} [{edition_type}, {stated_publication_years}, {actual_publication_places}, {book_code}, {super_book_code}]`
+      title: `{full_book_title} [{edition_type}, {stated_publication_years}, {actual_publication_places}, {book_code}, {super_book_code}]`,
+      /*titles: [{
+        header: 'Title.',
+        field: 'full_book_title'
+      },
+        {
+          header: 'Title.',
+          field: 'full_book_title'
+        },
+        {
+          header: 'Edition Type',
+          field: 'edition_type'
+        },]*/
     },
     {
       name: 'person',

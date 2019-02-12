@@ -47,8 +47,8 @@ function createTitles(conf: SearchConfig, result: any, table: TableConfig, addHe
   // table view
   if (conf.titles) {
     const fields: Gql.SearchOption[] = result.map((r: any) => ({
-      key: r.ID.toString(),
-      value: r.ID.toString(),
+      key: r[table.idName].toString(),
+      value: r[table.idName].toString(),
       titles: conf.titles.map(t => (t.type === 'date' ? new Date(r[t.field]) : clean(r[t.field])))
     }));
 
