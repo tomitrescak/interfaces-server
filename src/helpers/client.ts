@@ -5,11 +5,15 @@ export class Database {
 
   constructor(config: mysql.ConnectionConfig) {
     this.connection = mysql.createConnection(config);
+
+    console.log('Created connection to: ' + JSON.stringify(config, null, 2));
   }
   query<T>(sql: string, args?: any): Promise<T[]> {
     return new Promise((resolve, reject) => {
       this.connection.query(sql, args, (err, rows) => {
+        console.error(err);
         if (err) return reject(err);
+
         resolve(rows);
       });
     });
@@ -37,7 +41,7 @@ const options = {
   user: 'root',
   host: 'localhost',
   port: process.env.MYSQL_PORT ? parseInt(process.env.MYSQL_PORT, 10) : 3306,
-//  password: '',
+  //  password: '',
   database: 'confiscations'
 };
 
