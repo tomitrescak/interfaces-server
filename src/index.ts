@@ -6,8 +6,8 @@ import * as compression from 'compression';
 import { Options } from 'graphql-yoga';
 import { GraphQLServer } from 'graphql-yoga';
 
-import { Query } from './helpers/queries';
-import { Mutation } from './helpers/mutations';
+import { Query } from './queries';
+import { Mutation } from './mutations';
 import { db, Database } from './helpers/client';
 
 declare global {

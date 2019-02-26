@@ -1,6 +1,10 @@
-import * as Gql from '../generated/graphql';
-import { ViewConfig, clean, SearchConfig, TableConfig } from './helpers';
-import { config } from '../config';
+import * as fs from 'fs';
+
+import * as Gql from './generated/graphql';
+
+import { ViewConfig, clean, SearchConfig, TableConfig } from './helpers/helpers';
+import { config } from './config';
+import { db } from 'helpers/client';
 
 function findRecords<T>(
   ctx: App.Context,
@@ -123,5 +127,21 @@ export const Query: Gql.QueryResolvers.Resolvers<App.Context> = {
 
     const result = await Query.find(_, { searchString, name: conf.view, limit: 10 }, ctx, null);
     return createTitles(conf, result, table);
+  },
+  async config(_, _args, ctx) {
+    // find config in the database
+    let configString: string;
+    try {
+      const dbConfig = await ctx.db.findOne<Gql.Config>('SELECT * FROM config');
+      configString = dbConfig.config;
+    } catch (ex) {
+      console.error(
+        'You probably do not have a config table in your DB ;(. Please create one with fields [id: int, config: text]'
+      );
+    }
+    if (!configString) {
+      configString = fs.readFileSync('./config.json', { encoding: 'utf-8' });
+    }
+    return configString;
   }
 };

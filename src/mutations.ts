@@ -1,5 +1,5 @@
-import * as Gql from '../generated/graphql';
-import { config } from '../config';
+import * as Gql from './generated/graphql';
+import { config } from './config';
 
 async function update(ctx: App.Context, table: string, source: any) {
   let conf = config.tables.find(t => t.tableName === table);

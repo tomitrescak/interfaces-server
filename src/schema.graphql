@@ -24,9 +24,15 @@ type Data {
   data: JSON
 }
 
+type Config {
+  id: Int
+  config: String
+}
+
 type Query {
   search(searchString: String!, name: String, id: String): [SearchOption!]!
   enumerator(name: String): [DropdownOption!]!
+  config: JSON
 
   find(searchString: String!, name: String!, limit: Int): JSON
   findOne(id: String!, table: String!): Data
@@ -34,4 +40,5 @@ type Query {
 
 type Mutation {
   save(table: String, data: JSON): Data
+  saveConfig(data: JSON): JSON
 }

@@ -16,6 +16,8 @@ export interface Query {
 
   enumerator: DropdownOption[];
 
+  config?: Maybe<Json>;
+
   find?: Maybe<Json>;
 
   findOne?: Maybe<Data>;
@@ -55,6 +57,14 @@ export interface Data {
 
 export interface Mutation {
   save?: Maybe<Data>;
+
+  saveConfig?: Maybe<Json>;
+}
+
+export interface Config {
+  id?: Maybe<number>;
+
+  config?: Maybe<string>;
 }
 
 // ====================================================
@@ -86,6 +96,9 @@ export interface FindOneQueryArgs {
 export interface SaveMutationArgs {
   table?: Maybe<string>;
 
+  data?: Maybe<Json>;
+}
+export interface SaveConfigMutationArgs {
   data?: Maybe<Json>;
 }
 
@@ -150,6 +163,8 @@ export namespace QueryResolvers {
 
     enumerator?: EnumeratorResolver<DropdownOption[], TypeParent, Context>;
 
+    config?: ConfigResolver<Maybe<Json>, TypeParent, Context>;
+
     find?: FindResolver<Maybe<Json>, TypeParent, Context>;
 
     findOne?: FindOneResolver<Maybe<Data>, TypeParent, Context>;
@@ -177,6 +192,11 @@ export namespace QueryResolvers {
     name?: Maybe<string>;
   }
 
+  export type ConfigResolver<
+    R = Maybe<Json>,
+    Parent = {},
+    Context = {}
+  > = Resolver<R, Parent, Context>;
   export type FindResolver<
     R = Maybe<Json>,
     Parent = {},
@@ -311,6 +331,8 @@ export namespace DataResolvers {
 export namespace MutationResolvers {
   export interface Resolvers<Context = {}, TypeParent = {}> {
     save?: SaveResolver<Maybe<Data>, TypeParent, Context>;
+
+    saveConfig?: SaveConfigResolver<Maybe<Json>, TypeParent, Context>;
   }
 
   export type SaveResolver<
@@ -323,6 +345,34 @@ export namespace MutationResolvers {
 
     data?: Maybe<Json>;
   }
+
+  export type SaveConfigResolver<
+    R = Maybe<Json>,
+    Parent = {},
+    Context = {}
+  > = Resolver<R, Parent, Context, SaveConfigArgs>;
+  export interface SaveConfigArgs {
+    data?: Maybe<Json>;
+  }
+}
+
+export namespace ConfigResolvers {
+  export interface Resolvers<Context = {}, TypeParent = Config> {
+    id?: IdResolver<Maybe<number>, TypeParent, Context>;
+
+    config?: ConfigResolver<Maybe<string>, TypeParent, Context>;
+  }
+
+  export type IdResolver<
+    R = Maybe<number>,
+    Parent = Config,
+    Context = {}
+  > = Resolver<R, Parent, Context>;
+  export type ConfigResolver<
+    R = Maybe<string>,
+    Parent = Config,
+    Context = {}
+  > = Resolver<R, Parent, Context>;
 }
 
 /** Directs the executor to skip this field or fragment when the `if` argument is true. */
@@ -368,6 +418,7 @@ export interface IResolvers<Context = {}> {
   DropdownOption?: DropdownOptionResolvers.Resolvers<Context>;
   Data?: DataResolvers.Resolvers<Context>;
   Mutation?: MutationResolvers.Resolvers<Context>;
+  Config?: ConfigResolvers.Resolvers<Context>;
   Json?: GraphQLScalarType;
 }
 

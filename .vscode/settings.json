@@ -1,3 +1,6 @@
 {
-  "npm-scripts.showStartNotification": false
+  "npm-scripts.showStartNotification": false,
+  "files.exclude": {
+    "__error": "Not found"
+  }
 }
