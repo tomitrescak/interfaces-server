@@ -1,5 +1,20 @@
 import * as mysql from 'mysql';
 
+let createUsers = `create table if not exists __users(
+  id int primary key auto_increment,
+  user varchar(255) not null,
+  email varchar(255) not null,
+  password varchar(255) not null,
+  roles varchar(255) not null
+)`;
+
+let createConfig = `create table if not exists __config(
+  server longtext not null,
+  client longtext not null
+)`;
+
+const identity = (a: any) => a;
+
 export class Database {
   connection: mysql.Connection;
 
@@ -7,11 +22,14 @@ export class Database {
     this.connection = mysql.createConnection(config);
 
     console.log('Created connection to: ' + JSON.stringify(config, null, 2));
+
+    this.query(createUsers);
+    this.query(createConfig);
   }
   query<T>(sql: string, args?: any): Promise<T[]> {
     return new Promise((resolve, reject) => {
       this.connection.query(sql, args, (err, rows) => {
-        console.error(err);
+        // console.error(err);
         if (err) return reject(err);
 
         resolve(rows);
@@ -19,10 +37,10 @@ export class Database {
     });
   }
 
-  async findOne<T>(sql: string, args?: any): Promise<T> {
+  async findOne<T>(sql: string, args?: any, adjust: (result: any) => T = identity): Promise<T> {
     let result = await this.query<T>(sql, args);
     if (result && result.length) {
-      return result[0];
+      return adjust(result[0]);
     }
     return null;
   }

@@ -1,3 +1,7 @@
+import * as jwt from 'jsonwebtoken';
+
+export const APP_SECRET = process.env.APP_SECRET || 'qazwsxedcvfrcde135790';
+
 export interface TableConfig {
   /**
    * Table name as it appears in the database
@@ -47,4 +51,15 @@ export function clean(value: any) {
     return '';
   }
   return value;
+}
+
+export function getUserId(context: App.Context) {
+  const Authorization = context.request.get('Authorization');
+  if (Authorization) {
+    const token = Authorization.replace('Bearer ', '');
+    const { userId } = jwt.verify(token, APP_SECRET) as any;
+    return userId;
+  }
+
+  throw new Error('Not authenticated');
 }

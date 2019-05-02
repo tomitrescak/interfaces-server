@@ -38,7 +38,24 @@ type Query {
   findOne(id: String!, table: String!): Data
 }
 
+type User {
+  id: ID!
+  user: String!
+  email: String!
+  password: String
+  roles: [String]
+}
+
+type AuthPayload {
+  token: String
+  user: User
+}
+
 type Mutation {
   save(table: String, data: JSON): Data
   saveConfig(data: JSON): JSON
+
+  signup(email: String!, password: String!, name: String!): AuthPayload
+  login(email: String!, password: String!): AuthPayload
+  resume(token: String!): AuthPayload
 }

@@ -4,7 +4,6 @@ import * as Gql from './generated/graphql';
 
 import { ViewConfig, clean, SearchConfig, TableConfig } from './helpers/helpers';
 import { config } from './config';
-import { db } from 'helpers/client';
 
 function findRecords<T>(
   ctx: App.Context,
@@ -89,6 +88,9 @@ export const Query: Gql.QueryResolvers.Resolvers<App.Context> = {
     return result.map((r: any) => ({ text: `${r.name}`, value: r.ID.toString() }));
   },
   find(_, { searchString, name, limit }, ctx) {
+    // console.log('USER');
+    // console.log(getUserId(ctx));
+
     let conf = config.views.find(f => f.name === name);
     if (!conf) {
       throw new Error('Find config not allowed!: ' + name);

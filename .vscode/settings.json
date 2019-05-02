@@ -2,5 +2,10 @@
   "npm-scripts.showStartNotification": false,
   "files.exclude": {
     "__error": "Not found"
+  },
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#501F11",
+    "titleBar.activeBackground": "#6F2B18",
+    "titleBar.activeForeground": "#FDF9F8"
   }
 }

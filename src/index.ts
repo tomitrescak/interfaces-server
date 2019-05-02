@@ -14,6 +14,7 @@ declare global {
   namespace App {
     type Context = {
       db: Database;
+      request: any;
     };
   }
 }
@@ -56,6 +57,6 @@ const root = path.join(__dirname, '../build');
 
 server.express.use(compression());
 server.express.use(express.static(root));
-server.express.get('/*', function(req, res) {
+server.express.get('/*', function(_req, res) {
   res.sendFile(path.join(root, 'index.html'));
 });

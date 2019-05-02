@@ -59,6 +59,30 @@ export interface Mutation {
   save?: Maybe<Data>;
 
   saveConfig?: Maybe<Json>;
+
+  signup?: Maybe<AuthPayload>;
+
+  login?: Maybe<AuthPayload>;
+
+  resume?: Maybe<AuthPayload>;
+}
+
+export interface AuthPayload {
+  token?: Maybe<string>;
+
+  user?: Maybe<User>;
+}
+
+export interface User {
+  id: string;
+
+  user: string;
+
+  email: string;
+
+  password?: Maybe<string>;
+
+  roles?: Maybe<(Maybe<string>)[]>;
 }
 
 export interface Config {
@@ -100,6 +124,21 @@ export interface SaveMutationArgs {
 }
 export interface SaveConfigMutationArgs {
   data?: Maybe<Json>;
+}
+export interface SignupMutationArgs {
+  email: string;
+
+  password: string;
+
+  name: string;
+}
+export interface LoginMutationArgs {
+  email: string;
+
+  password: string;
+}
+export interface ResumeMutationArgs {
+  token: string;
 }
 
 import {
@@ -333,6 +372,12 @@ export namespace MutationResolvers {
     save?: SaveResolver<Maybe<Data>, TypeParent, Context>;
 
     saveConfig?: SaveConfigResolver<Maybe<Json>, TypeParent, Context>;
+
+    signup?: SignupResolver<Maybe<AuthPayload>, TypeParent, Context>;
+
+    login?: LoginResolver<Maybe<AuthPayload>, TypeParent, Context>;
+
+    resume?: ResumeResolver<Maybe<AuthPayload>, TypeParent, Context>;
   }
 
   export type SaveResolver<
@@ -354,6 +399,98 @@ export namespace MutationResolvers {
   export interface SaveConfigArgs {
     data?: Maybe<Json>;
   }
+
+  export type SignupResolver<
+    R = Maybe<AuthPayload>,
+    Parent = {},
+    Context = {}
+  > = Resolver<R, Parent, Context, SignupArgs>;
+  export interface SignupArgs {
+    email: string;
+
+    password: string;
+
+    name: string;
+  }
+
+  export type LoginResolver<
+    R = Maybe<AuthPayload>,
+    Parent = {},
+    Context = {}
+  > = Resolver<R, Parent, Context, LoginArgs>;
+  export interface LoginArgs {
+    email: string;
+
+    password: string;
+  }
+
+  export type ResumeResolver<
+    R = Maybe<AuthPayload>,
+    Parent = {},
+    Context = {}
+  > = Resolver<R, Parent, Context, ResumeArgs>;
+  export interface ResumeArgs {
+    token: string;
+  }
+}
+
+export namespace AuthPayloadResolvers {
+  export interface Resolvers<Context = {}, TypeParent = AuthPayload> {
+    token?: TokenResolver<Maybe<string>, TypeParent, Context>;
+
+    user?: UserResolver<Maybe<User>, TypeParent, Context>;
+  }
+
+  export type TokenResolver<
+    R = Maybe<string>,
+    Parent = AuthPayload,
+    Context = {}
+  > = Resolver<R, Parent, Context>;
+  export type UserResolver<
+    R = Maybe<User>,
+    Parent = AuthPayload,
+    Context = {}
+  > = Resolver<R, Parent, Context>;
+}
+
+export namespace UserResolvers {
+  export interface Resolvers<Context = {}, TypeParent = User> {
+    id?: IdResolver<string, TypeParent, Context>;
+
+    user?: UserResolver<string, TypeParent, Context>;
+
+    email?: EmailResolver<string, TypeParent, Context>;
+
+    password?: PasswordResolver<Maybe<string>, TypeParent, Context>;
+
+    roles?: RolesResolver<Maybe<(Maybe<string>)[]>, TypeParent, Context>;
+  }
+
+  export type IdResolver<R = string, Parent = User, Context = {}> = Resolver<
+    R,
+    Parent,
+    Context
+  >;
+  export type UserResolver<R = string, Parent = User, Context = {}> = Resolver<
+    R,
+    Parent,
+    Context
+  >;
+  export type EmailResolver<R = string, Parent = User, Context = {}> = Resolver<
+    R,
+    Parent,
+    Context
+  >;
+  export type PasswordResolver<
+    R = Maybe<string>,
+    Parent = User,
+    Context = {}
+  > = Resolver<R, Parent, Context>;
+  export type RolesResolver<
+    R = Maybe<(Maybe<string>)[]>,
+    Parent = User,
+    Context = {}
+  > = Resolver<R, Parent, Context>;
 }
 
 export namespace ConfigResolvers {
@@ -418,6 +555,8 @@ export interface IResolvers<Context = {}> {
   DropdownOption?: DropdownOptionResolvers.Resolvers<Context>;
   Data?: DataResolvers.Resolvers<Context>;
   Mutation?: MutationResolvers.Resolvers<Context>;
+  AuthPayload?: AuthPayloadResolvers.Resolvers<Context>;
+  User?: UserResolvers.Resolvers<Context>;
   Config?: ConfigResolvers.Resolvers<Context>;
   Json?: GraphQLScalarType;
 }
