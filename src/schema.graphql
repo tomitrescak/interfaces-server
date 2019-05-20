@@ -25,17 +25,18 @@ type Data {
 }
 
 type Config {
-  id: Int
   config: String
+  users: [User]
 }
 
 type Query {
   search(searchString: String!, name: String, id: String): [SearchOption!]!
   enumerator(name: String): [DropdownOption!]!
-  config: JSON
+  config: Config
 
   find(searchString: String!, name: String!, limit: Int): JSON
   findOne(id: String!, table: String!): Data
+  resume(token: String!): AuthPayload
 }
 
 type User {
@@ -46,6 +47,13 @@ type User {
   roles: [String]
 }
 
+input UserInput {
+  id: ID!
+  user: String!
+  email: String!
+  roles: [String]
+}
+
 type AuthPayload {
   token: String
   user: User
@@ -53,9 +61,8 @@ type AuthPayload {
 
 type Mutation {
   save(table: String, data: JSON): Data
-  saveConfig(data: JSON): JSON
+  saveConfig(config: String, users: [UserInput]): Boolean
 
   signup(email: String!, password: String!, name: String!): AuthPayload
   login(email: String!, password: String!): AuthPayload
-  resume(token: String!): AuthPayload
 }

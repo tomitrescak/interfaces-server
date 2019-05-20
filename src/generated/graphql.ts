@@ -1,6 +1,15 @@
 export type Maybe<T> = T | null;
 
-/** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
+export interface UserInput {
+  id: string;
+
+  user: string;
+
+  email: string;
+
+  roles?: Maybe<(Maybe<string>)[]>;
+}
+
 export type Json = any;
 
 // ====================================================
@@ -16,11 +25,13 @@ export interface Query {
 
   enumerator: DropdownOption[];
 
-  config?: Maybe<Json>;
+  config?: Maybe<Config>;
 
   find?: Maybe<Json>;
 
   findOne?: Maybe<Data>;
+
+  resume?: Maybe<AuthPayload>;
 }
 
 export interface SearchOption {
@@ -45,32 +56,10 @@ export interface DropdownOption {
   description?: Maybe<string>;
 }
 
-export interface Data {
-  id?: Maybe<string>;
+export interface Config {
+  config?: Maybe<string>;
 
-  table?: Maybe<string>;
-
-  key?: Maybe<string>;
-
-  data?: Maybe<Json>;
-}
-
-export interface Mutation {
-  save?: Maybe<Data>;
-
-  saveConfig?: Maybe<Json>;
-
-  signup?: Maybe<AuthPayload>;
-
-  login?: Maybe<AuthPayload>;
-
-  resume?: Maybe<AuthPayload>;
-}
-
-export interface AuthPayload {
-  token?: Maybe<string>;
-
-  user?: Maybe<User>;
+  users?: Maybe<(Maybe<User>)[]>;
 }
 
 export interface User {
@@ -85,10 +74,30 @@ export interface User {
   roles?: Maybe<(Maybe<string>)[]>;
 }
 
-export interface Config {
-  id?: Maybe<number>;
+export interface Data {
+  id?: Maybe<string>;
 
-  config?: Maybe<string>;
+  table?: Maybe<string>;
+
+  key?: Maybe<string>;
+
+  data?: Maybe<Json>;
+}
+
+export interface AuthPayload {
+  token?: Maybe<string>;
+
+  user?: Maybe<User>;
+}
+
+export interface Mutation {
+  save?: Maybe<Data>;
+
+  saveConfig?: Maybe<boolean>;
+
+  signup?: Maybe<AuthPayload>;
+
+  login?: Maybe<AuthPayload>;
 }
 
 // ====================================================
@@ -117,13 +126,18 @@ export interface FindOneQueryArgs {
 
   table: string;
 }
+export interface ResumeQueryArgs {
+  token: string;
+}
 export interface SaveMutationArgs {
   table?: Maybe<string>;
 
   data?: Maybe<Json>;
 }
 export interface SaveConfigMutationArgs {
-  data?: Maybe<Json>;
+  config?: Maybe<string>;
+
+  users?: Maybe<(Maybe<UserInput>)[]>;
 }
 export interface SignupMutationArgs {
   email: string;
@@ -137,9 +151,6 @@ export interface LoginMutationArgs {
 
   password: string;
 }
-export interface ResumeMutationArgs {
-  token: string;
-}
 
 import {
   GraphQLResolveInfo,
@@ -147,24 +158,24 @@ import {
   GraphQLScalarTypeConfig
 } from "graphql";
 
-export type Resolver<Result, Parent = {}, Context = {}, Args = {}> = (
+export type Resolver<Result, Parent = {}, TContext = {}, Args = {}> = (
   parent: Parent,
   args: Args,
-  context: Context,
+  context: TContext,
   info: GraphQLResolveInfo
 ) => Promise<Result> | Result;
 
-export interface ISubscriptionResolverObject<Result, Parent, Context, Args> {
+export interface ISubscriptionResolverObject<Result, Parent, TContext, Args> {
   subscribe<R = Result, P = Parent>(
     parent: P,
     args: Args,
-    context: Context,
+    context: TContext,
     info: GraphQLResolveInfo
   ): AsyncIterator<R | Result> | Promise<AsyncIterator<R | Result>>;
   resolve?<R = Result, P = Parent>(
     parent: P,
     args: Args,
-    context: Context,
+    context: TContext,
     info: GraphQLResolveInfo
   ): R | Result | Promise<R | Result>;
 }
@@ -172,17 +183,17 @@ export interface ISubscriptionResolverObject<Result, Parent, Context, Args> {
 export type SubscriptionResolver<
   Result,
   Parent = {},
-  Context = {},
+  TContext = {},
   Args = {}
 > =
   | ((
       ...args: any[]
-    ) => ISubscriptionResolverObject<Result, Parent, Context, Args>)
-  | ISubscriptionResolverObject<Result, Parent, Context, Args>;
+    ) => ISubscriptionResolverObject<Result, Parent, TContext, Args>)
+  | ISubscriptionResolverObject<Result, Parent, TContext, Args>;
 
-export type TypeResolveFn<Types, Parent = {}, Context = {}> = (
+export type TypeResolveFn<Types, Parent = {}, TContext = {}> = (
   parent: Parent,
-  context: Context,
+  context: TContext,
   info: GraphQLResolveInfo
 ) => Maybe<Types>;
 
@@ -197,23 +208,25 @@ export type DirectiveResolverFn<TResult, TArgs = {}, TContext = {}> = (
 ) => TResult | Promise<TResult>;
 
 export namespace QueryResolvers {
-  export interface Resolvers<Context = {}, TypeParent = {}> {
-    search?: SearchResolver<SearchOption[], TypeParent, Context>;
+  export interface Resolvers<TContext = {}, TypeParent = {}> {
+    search?: SearchResolver<SearchOption[], TypeParent, TContext>;
 
-    enumerator?: EnumeratorResolver<DropdownOption[], TypeParent, Context>;
+    enumerator?: EnumeratorResolver<DropdownOption[], TypeParent, TContext>;
 
-    config?: ConfigResolver<Maybe<Json>, TypeParent, Context>;
+    config?: ConfigResolver<Maybe<Config>, TypeParent, TContext>;
 
-    find?: FindResolver<Maybe<Json>, TypeParent, Context>;
+    find?: FindResolver<Maybe<Json>, TypeParent, TContext>;
 
-    findOne?: FindOneResolver<Maybe<Data>, TypeParent, Context>;
+    findOne?: FindOneResolver<Maybe<Data>, TypeParent, TContext>;
+
+    resume?: ResumeResolver<Maybe<AuthPayload>, TypeParent, TContext>;
   }
 
   export type SearchResolver<
     R = SearchOption[],
     Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, SearchArgs>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext, SearchArgs>;
   export interface SearchArgs {
     searchString: string;
 
@@ -225,22 +238,22 @@ export namespace QueryResolvers {
   export type EnumeratorResolver<
     R = DropdownOption[],
     Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, EnumeratorArgs>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext, EnumeratorArgs>;
   export interface EnumeratorArgs {
     name?: Maybe<string>;
   }
 
   export type ConfigResolver<
-    R = Maybe<Json>,
+    R = Maybe<Config>,
     Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
   export type FindResolver<
     R = Maybe<Json>,
     Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, FindArgs>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext, FindArgs>;
   export interface FindArgs {
     searchString: string;
 
@@ -252,139 +265,224 @@ export namespace QueryResolvers {
   export type FindOneResolver<
     R = Maybe<Data>,
     Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, FindOneArgs>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext, FindOneArgs>;
   export interface FindOneArgs {
     id: string;
 
     table: string;
   }
+
+  export type ResumeResolver<
+    R = Maybe<AuthPayload>,
+    Parent = {},
+    TContext = {}
+  > = Resolver<R, Parent, TContext, ResumeArgs>;
+  export interface ResumeArgs {
+    token: string;
+  }
 }
 
 export namespace SearchOptionResolvers {
-  export interface Resolvers<Context = {}, TypeParent = SearchOption> {
-    key?: KeyResolver<Maybe<string>, TypeParent, Context>;
+  export interface Resolvers<TContext = {}, TypeParent = SearchOption> {
+    key?: KeyResolver<Maybe<string>, TypeParent, TContext>;
 
-    value?: ValueResolver<Maybe<string>, TypeParent, Context>;
+    value?: ValueResolver<Maybe<string>, TypeParent, TContext>;
 
-    title?: TitleResolver<Maybe<string>, TypeParent, Context>;
+    title?: TitleResolver<Maybe<string>, TypeParent, TContext>;
 
-    titles?: TitlesResolver<Maybe<string[]>, TypeParent, Context>;
+    titles?: TitlesResolver<Maybe<string[]>, TypeParent, TContext>;
 
-    description?: DescriptionResolver<Maybe<string>, TypeParent, Context>;
+    description?: DescriptionResolver<Maybe<string>, TypeParent, TContext>;
   }
 
   export type KeyResolver<
     R = Maybe<string>,
     Parent = SearchOption,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
   export type ValueResolver<
     R = Maybe<string>,
     Parent = SearchOption,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
   export type TitleResolver<
     R = Maybe<string>,
     Parent = SearchOption,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
   export type TitlesResolver<
     R = Maybe<string[]>,
     Parent = SearchOption,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
   export type DescriptionResolver<
     R = Maybe<string>,
     Parent = SearchOption,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
 }
 
 export namespace DropdownOptionResolvers {
-  export interface Resolvers<Context = {}, TypeParent = DropdownOption> {
-    key?: KeyResolver<Maybe<string>, TypeParent, Context>;
+  export interface Resolvers<TContext = {}, TypeParent = DropdownOption> {
+    key?: KeyResolver<Maybe<string>, TypeParent, TContext>;
 
-    value?: ValueResolver<Maybe<string>, TypeParent, Context>;
+    value?: ValueResolver<Maybe<string>, TypeParent, TContext>;
 
-    text?: TextResolver<Maybe<string>, TypeParent, Context>;
+    text?: TextResolver<Maybe<string>, TypeParent, TContext>;
 
-    description?: DescriptionResolver<Maybe<string>, TypeParent, Context>;
+    description?: DescriptionResolver<Maybe<string>, TypeParent, TContext>;
   }
 
   export type KeyResolver<
     R = Maybe<string>,
     Parent = DropdownOption,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
   export type ValueResolver<
     R = Maybe<string>,
     Parent = DropdownOption,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
   export type TextResolver<
     R = Maybe<string>,
     Parent = DropdownOption,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
   export type DescriptionResolver<
     R = Maybe<string>,
     Parent = DropdownOption,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
+}
+
+export namespace ConfigResolvers {
+  export interface Resolvers<TContext = {}, TypeParent = Config> {
+    config?: ConfigResolver<Maybe<string>, TypeParent, TContext>;
+
+    users?: UsersResolver<Maybe<(Maybe<User>)[]>, TypeParent, TContext>;
+  }
+
+  export type ConfigResolver<
+    R = Maybe<string>,
+    Parent = Config,
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
+  export type UsersResolver<
+    R = Maybe<(Maybe<User>)[]>,
+    Parent = Config,
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
+}
+
+export namespace UserResolvers {
+  export interface Resolvers<TContext = {}, TypeParent = User> {
+    id?: IdResolver<string, TypeParent, TContext>;
+
+    user?: UserResolver<string, TypeParent, TContext>;
+
+    email?: EmailResolver<string, TypeParent, TContext>;
+
+    password?: PasswordResolver<Maybe<string>, TypeParent, TContext>;
+
+    roles?: RolesResolver<Maybe<(Maybe<string>)[]>, TypeParent, TContext>;
+  }
+
+  export type IdResolver<R = string, Parent = User, TContext = {}> = Resolver<
+    R,
+    Parent,
+    TContext
+  >;
+  export type UserResolver<R = string, Parent = User, TContext = {}> = Resolver<
+    R,
+    Parent,
+    TContext
+  >;
+  export type EmailResolver<
+    R = string,
+    Parent = User,
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
+  export type PasswordResolver<
+    R = Maybe<string>,
+    Parent = User,
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
+  export type RolesResolver<
+    R = Maybe<(Maybe<string>)[]>,
+    Parent = User,
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
 }
 
 export namespace DataResolvers {
-  export interface Resolvers<Context = {}, TypeParent = Data> {
-    id?: IdResolver<Maybe<string>, TypeParent, Context>;
+  export interface Resolvers<TContext = {}, TypeParent = Data> {
+    id?: IdResolver<Maybe<string>, TypeParent, TContext>;
 
-    table?: TableResolver<Maybe<string>, TypeParent, Context>;
+    table?: TableResolver<Maybe<string>, TypeParent, TContext>;
 
-    key?: KeyResolver<Maybe<string>, TypeParent, Context>;
+    key?: KeyResolver<Maybe<string>, TypeParent, TContext>;
 
-    data?: DataResolver<Maybe<Json>, TypeParent, Context>;
+    data?: DataResolver<Maybe<Json>, TypeParent, TContext>;
   }
 
   export type IdResolver<
     R = Maybe<string>,
     Parent = Data,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
   export type TableResolver<
     R = Maybe<string>,
     Parent = Data,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
   export type KeyResolver<
     R = Maybe<string>,
     Parent = Data,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
   export type DataResolver<
     R = Maybe<Json>,
     Parent = Data,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
+}
+
+export namespace AuthPayloadResolvers {
+  export interface Resolvers<TContext = {}, TypeParent = AuthPayload> {
+    token?: TokenResolver<Maybe<string>, TypeParent, TContext>;
+
+    user?: UserResolver<Maybe<User>, TypeParent, TContext>;
+  }
+
+  export type TokenResolver<
+    R = Maybe<string>,
+    Parent = AuthPayload,
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
+  export type UserResolver<
+    R = Maybe<User>,
+    Parent = AuthPayload,
+    TContext = {}
+  > = Resolver<R, Parent, TContext>;
 }
 
 export namespace MutationResolvers {
-  export interface Resolvers<Context = {}, TypeParent = {}> {
-    save?: SaveResolver<Maybe<Data>, TypeParent, Context>;
+  export interface Resolvers<TContext = {}, TypeParent = {}> {
+    save?: SaveResolver<Maybe<Data>, TypeParent, TContext>;
 
-    saveConfig?: SaveConfigResolver<Maybe<Json>, TypeParent, Context>;
+    saveConfig?: SaveConfigResolver<Maybe<boolean>, TypeParent, TContext>;
 
-    signup?: SignupResolver<Maybe<AuthPayload>, TypeParent, Context>;
+    signup?: SignupResolver<Maybe<AuthPayload>, TypeParent, TContext>;
 
-    login?: LoginResolver<Maybe<AuthPayload>, TypeParent, Context>;
-
-    resume?: ResumeResolver<Maybe<AuthPayload>, TypeParent, Context>;
+    login?: LoginResolver<Maybe<AuthPayload>, TypeParent, TContext>;
   }
 
   export type SaveResolver<
     R = Maybe<Data>,
     Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, SaveArgs>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext, SaveArgs>;
   export interface SaveArgs {
     table?: Maybe<string>;
 
@@ -392,19 +490,21 @@ export namespace MutationResolvers {
   }
 
   export type SaveConfigResolver<
-    R = Maybe<Json>,
+    R = Maybe<boolean>,
     Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, SaveConfigArgs>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext, SaveConfigArgs>;
   export interface SaveConfigArgs {
-    data?: Maybe<Json>;
+    config?: Maybe<string>;
+
+    users?: Maybe<(Maybe<UserInput>)[]>;
   }
 
   export type SignupResolver<
     R = Maybe<AuthPayload>,
     Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, SignupArgs>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext, SignupArgs>;
   export interface SignupArgs {
     email: string;
 
@@ -416,100 +516,13 @@ export namespace MutationResolvers {
   export type LoginResolver<
     R = Maybe<AuthPayload>,
     Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, LoginArgs>;
+    TContext = {}
+  > = Resolver<R, Parent, TContext, LoginArgs>;
   export interface LoginArgs {
     email: string;
 
     password: string;
   }
-
-  export type ResumeResolver<
-    R = Maybe<AuthPayload>,
-    Parent = {},
-    Context = {}
-  > = Resolver<R, Parent, Context, ResumeArgs>;
-  export interface ResumeArgs {
-    token: string;
-  }
-}
-
-export namespace AuthPayloadResolvers {
-  export interface Resolvers<Context = {}, TypeParent = AuthPayload> {
-    token?: TokenResolver<Maybe<string>, TypeParent, Context>;
-
-    user?: UserResolver<Maybe<User>, TypeParent, Context>;
-  }
-
-  export type TokenResolver<
-    R = Maybe<string>,
-    Parent = AuthPayload,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type UserResolver<
-    R = Maybe<User>,
-    Parent = AuthPayload,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-}
-
-export namespace UserResolvers {
-  export interface Resolvers<Context = {}, TypeParent = User> {
-    id?: IdResolver<string, TypeParent, Context>;
-
-    user?: UserResolver<string, TypeParent, Context>;
-
-    email?: EmailResolver<string, TypeParent, Context>;
-
-    password?: PasswordResolver<Maybe<string>, TypeParent, Context>;
-
-    roles?: RolesResolver<Maybe<(Maybe<string>)[]>, TypeParent, Context>;
-  }
-
-  export type IdResolver<R = string, Parent = User, Context = {}> = Resolver<
-    R,
-    Parent,
-    Context
-  >;
-  export type UserResolver<R = string, Parent = User, Context = {}> = Resolver<
-    R,
-    Parent,
-    Context
-  >;
-  export type EmailResolver<R = string, Parent = User, Context = {}> = Resolver<
-    R,
-    Parent,
-    Context
-  >;
-  export type PasswordResolver<
-    R = Maybe<string>,
-    Parent = User,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type RolesResolver<
-    R = Maybe<(Maybe<string>)[]>,
-    Parent = User,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-}
-
-export namespace ConfigResolvers {
-  export interface Resolvers<Context = {}, TypeParent = Config> {
-    id?: IdResolver<Maybe<number>, TypeParent, Context>;
-
-    config?: ConfigResolver<Maybe<string>, TypeParent, Context>;
-  }
-
-  export type IdResolver<
-    R = Maybe<number>,
-    Parent = Config,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
-  export type ConfigResolver<
-    R = Maybe<string>,
-    Parent = Config,
-    Context = {}
-  > = Resolver<R, Parent, Context>;
 }
 
 /** Directs the executor to skip this field or fragment when the `if` argument is true. */
@@ -549,20 +562,20 @@ export interface JSONScalarConfig extends GraphQLScalarTypeConfig<Json, any> {
   name: "JSON";
 }
 
-export interface IResolvers<Context = {}> {
-  Query?: QueryResolvers.Resolvers<Context>;
-  SearchOption?: SearchOptionResolvers.Resolvers<Context>;
-  DropdownOption?: DropdownOptionResolvers.Resolvers<Context>;
-  Data?: DataResolvers.Resolvers<Context>;
-  Mutation?: MutationResolvers.Resolvers<Context>;
-  AuthPayload?: AuthPayloadResolvers.Resolvers<Context>;
-  User?: UserResolvers.Resolvers<Context>;
-  Config?: ConfigResolvers.Resolvers<Context>;
+export type IResolvers<TContext = {}> = {
+  Query?: QueryResolvers.Resolvers<TContext>;
+  SearchOption?: SearchOptionResolvers.Resolvers<TContext>;
+  DropdownOption?: DropdownOptionResolvers.Resolvers<TContext>;
+  Config?: ConfigResolvers.Resolvers<TContext>;
+  User?: UserResolvers.Resolvers<TContext>;
+  Data?: DataResolvers.Resolvers<TContext>;
+  AuthPayload?: AuthPayloadResolvers.Resolvers<TContext>;
+  Mutation?: MutationResolvers.Resolvers<TContext>;
   Json?: GraphQLScalarType;
-}
+} & { [typeName: string]: never };
 
-export interface IDirectiveResolvers<Result> {
+export type IDirectiveResolvers<Result> = {
   skip?: SkipDirectiveResolver<Result>;
   include?: IncludeDirectiveResolver<Result>;
   deprecated?: DeprecatedDirectiveResolver<Result>;
-}
+} & { [directiveName: string]: never };

@@ -25,7 +25,7 @@ async function update(ctx: App.Context, table: string, source: any) {
   return source;
 }
 
-async function findUserByEmail(email: string, context: App.Context, withPassword = false) {
+export async function findUserByEmail(email: string, context: App.Context, withPassword = false) {
   return context.db.findOne<Gql.User>(
     `SELECT id, user, email, roles ${
       withPassword ? ', password' : ''
@@ -39,18 +39,18 @@ export const Mutation: Gql.MutationResolvers.Resolvers<App.Context> = {
   async save(_, { data, table }, ctx) {
     return update(ctx, table, data);
   },
-  async resume(_, args, context) {
-    const { email } = jwt.verify(args.token, APP_SECRET) as any;
-    const user = await findUserByEmail(email, context);
+  async saveConfig(_, { config, users }, ctx) {
+    await ctx.db.query(`UPDATE __config SET config = ? WHERE ID = 1`, [config]);
+    await ctx.db.query(`INSERT INTO __config SET config = ?`, [config]);
 
-    if (!user) {
-      throw new Error('User not found!');
+    for (let user of users) {
+      await ctx.db.query(`UPDATE __users SET roles = ? WHERE ID = ?`, [
+        user.roles.join(','),
+        user.id
+      ]);
     }
 
-    return {
-      user,
-      token: args.token
-    };
+    return true;
   },
   async signup(_, args, context) {
     const password = await bcrypt.hash(args.password, 10);

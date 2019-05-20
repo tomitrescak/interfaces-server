@@ -2,6 +2,8 @@ import * as GraphQLJSON from 'graphql-type-json';
 import * as express from 'express';
 import * as path from 'path';
 import * as compression from 'compression';
+import * as bodyParser from 'body-parser';
+import * as fs from 'fs';
 
 import { Options } from 'graphql-yoga';
 import { GraphQLServer } from 'graphql-yoga';
@@ -54,9 +56,42 @@ server.start(
 );
 
 const root = path.join(__dirname, '../build');
+let website: any;
 
+server.express.use(bodyParser.json());
 server.express.use(compression());
 server.express.use(express.static(root));
+server.express.post('/api/website', function(req, res) {
+  console.log(req.body.action);
+  if (req.body.action === 'save') {
+    website = JSON.parse(req.body.project);
+    if (!fs.existsSync('./definition')) {
+      fs.mkdirSync('./definition');
+    }
+    if (fs.existsSync('./definition/website.json')) {
+      fs.renameSync(
+        './definition/website.json',
+        `./definition/website.${new Date().toISOString().replace(/:/g, '-')}.json`
+      );
+    }
+    fs.writeFileSync('./definition/website.json', req.body.project, { encoding: 'utf-8' });
+    res.json({});
+    return;
+  }
+  if (req.body.action === 'load') {
+    if (!website) {
+      if (fs.existsSync('./definition/website.json')) {
+        website = JSON.parse(fs.readFileSync('./definition/website.json', { encoding: 'utf-8' }));
+      } else {
+        website = {};
+      }
+    }
+    res.json(website);
+    return;
+  }
+  throw new Error('Not happening ..');
+  // res.sendFile(path.join(root, 'index.html'));
+});
 server.express.get('/*', function(_req, res) {
   res.sendFile(path.join(root, 'index.html'));
 });

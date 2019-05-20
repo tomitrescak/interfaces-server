@@ -1,9 +1,11 @@
-import * as fs from 'fs';
-
+import * as jwt from 'jsonwebtoken';
 import * as Gql from './generated/graphql';
+
+import { APP_SECRET } from './helpers/helpers';
 
 import { ViewConfig, clean, SearchConfig, TableConfig } from './helpers/helpers';
 import { config } from './config';
+import { findUserByEmail } from './mutations';
 
 function findRecords<T>(
   ctx: App.Context,
@@ -18,7 +20,7 @@ function findRecords<T>(
     parts = searchString.split(' ').map(s => s.trim());
 
     parts[0] = '%' + parts[0] + '%';
-    sql = `SELECT * FROM consignment WHERE CAST(${config.fields[0]} AS CHAR) LIKE ?`;
+    sql = `SELECT * FROM ${config.table} WHERE CAST(${config.fields[0]} AS CHAR) LIKE ?`;
     for (let i = 1; i < parts.length; i++) {
       sql += ` AND ${config.fields[i]} = ?`;
     }
@@ -79,6 +81,19 @@ function interpolate(title: string, obj: any) {
 }
 
 export const Query: Gql.QueryResolvers.Resolvers<App.Context> = {
+  async resume(_, args, context) {
+    const { email } = jwt.verify(args.token, APP_SECRET) as any;
+    const user = await findUserByEmail(email, context);
+
+    if (!user) {
+      throw new Error('User not found!');
+    }
+
+    return {
+      user,
+      token: args.token
+    };
+  },
   async enumerator(_, { name }, ctx) {
     if (config.enumerators.indexOf(name) === -1) {
       throw new Error('Enumerator not allowed!');
@@ -132,18 +147,24 @@ export const Query: Gql.QueryResolvers.Resolvers<App.Context> = {
   },
   async config(_, _args, ctx) {
     // find config in the database
-    let configString: string;
     try {
-      const dbConfig = await ctx.db.findOne<Gql.Config>('SELECT * FROM config');
-      configString = dbConfig.config;
+      const config = await ctx.db.findOne<Gql.Config>('SELECT * FROM __config WHERE id = 1');
+      const users = await ctx.db.query<Gql.User>('SELECT id, user, email, roles FROM __users');
+
+      users.forEach(u => (u.roles = (u.roles as any).split(',')));
+
+      return {
+        config: config.config,
+        users
+      };
     } catch (ex) {
       console.error(
         'You probably do not have a config table in your DB ;(. Please create one with fields [id: int, config: text]'
       );
     }
-    if (!configString) {
-      configString = fs.readFileSync('./config.json', { encoding: 'utf-8' });
-    }
-    return configString;
+    // if (!configString) {
+    //   configString = fs.readFileSync('./config.json', { encoding: 'utf-8' });
+    // }
+    return null;
   }
 };
